@@ -36,7 +36,7 @@ namespace RavenTests
                     var resultC = session.Load<EntityC>(c.Id);
 
                     Assert.NotNull(resultA, "resultA");
-                    Assert.NotNull(resultB, "resultB");
+                    Assert.NotNull(resultB, "resultB - Load");
                     Assert.NotNull(resultC, "resultC");
 
                     Assert.AreEqual(session.Advanced.NumberOfRequests, 3);
@@ -56,7 +56,7 @@ namespace RavenTests
                     Assert.AreEqual(1, session.Advanced.NumberOfRequests);
                     Assert.NotNull(resultC, "resultC");
                     Assert.NotNull(resultA, "resultA");
-                    Assert.NotNull(resultB, "resultB");
+                    Assert.NotNull(resultB, "resultB - Include");
                 }
             }
         }
