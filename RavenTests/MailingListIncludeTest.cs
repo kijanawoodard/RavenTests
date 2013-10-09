@@ -86,12 +86,8 @@ namespace RavenTests
 [Test]
 public void Test()
 {
-	using (var store = new DocumentStore())
+	using (var store = NewDocumentStore())
 	{
-		store.Url = "http://localhost:8080";
-		store.DefaultDatabase = "test-includes";
-		store.Initialize();
-
 		EntityA a = new EntityA { External = Guid.NewGuid() };
 		EntityB b = new EntityB { External = a.External };
 		EntityC c = new EntityC { External = Guid.NewGuid(), EntityAId = a.Id, EntityBId = b.Id };
