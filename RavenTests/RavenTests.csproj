@@ -107,6 +107,7 @@
     <Compile Include="MailingListPug.cs" />
     <Compile Include="MailingListTests.cs" />
     <Compile Include="MapLongTests.cs" />
+    <Compile Include="MoreLikeThisViaSearch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RavenTests\CanCallLastOnArray.cs" />
     <Compile Include="SessionTests.cs" />

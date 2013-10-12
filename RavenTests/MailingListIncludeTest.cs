@@ -83,78 +83,78 @@ namespace RavenTests
 
 	public class MailingListIncludeTest2 : RavenTestBase
 	{
-[Test]
-public void Test()
-{
-	using (var store = NewDocumentStore())
-	{
-		EntityA a = new EntityA { External = Guid.NewGuid() };
-		EntityB b = new EntityB { External = a.External };
-		EntityC c = new EntityC { External = Guid.NewGuid(), EntityAId = a.Id, EntityBId = b.Id };
-
-
-		using (var session = store.OpenSession())
+		[Test]
+		public void Test()
 		{
-			session.Store(a);
-			session.Store(b);
-			session.Store(c);
-			session.SaveChanges();
-			//Assert.AreEqual(store.DatabaseCommands.GetStatistics().CountOfDocuments, 3);
+			using (var store = NewDocumentStore())
+			{
+				EntityA a = new EntityA {External = Guid.NewGuid()};
+				EntityB b = new EntityB {External = a.External};
+				EntityC c = new EntityC {External = Guid.NewGuid(), EntityAId = a.Id, EntityBId = b.Id};
+
+
+				using (var session = store.OpenSession())
+				{
+					session.Store(a);
+					session.Store(b);
+					session.Store(c);
+					session.SaveChanges();
+					//Assert.AreEqual(store.DatabaseCommands.GetStatistics().CountOfDocuments, 3);
+				}
+
+				using (var session = store.OpenSession())
+				{
+					var resultA = session.Load<EntityA>(c.EntityAId);
+					var resultB = session.Load<EntityB>(c.EntityBId);
+
+					var resultC = session.Load<EntityC>(c.Id);
+
+					Assert.NotNull(resultA, "resultA");
+					Assert.NotNull(resultB, "resultB");
+					Assert.NotNull(resultC, "resultC");
+
+					Assert.AreEqual(session.Advanced.NumberOfRequests, 3);
+				}
+
+				using (var session = store.OpenSession())
+				{
+					var resultC =
+						session
+							.Include<EntityC>(x => x.EntityAId)
+							.Include(x => x.EntityBId)
+							.Load(c.Id);
+
+					var resultA = session.Load<EntityA>(a.Id);
+					var resultB = session.Load<EntityB>(b.Id);
+
+					Assert.AreEqual(1, session.Advanced.NumberOfRequests);
+					Assert.NotNull(resultC, "resultC");
+					Assert.NotNull(resultA, "resultA");
+					Assert.NotNull(resultB, "resultB");
+				}
+			}
 		}
 
-		using (var session = store.OpenSession())
+		public class EntityA
 		{
-			var resultA = session.Load<EntityA>(c.EntityAId);
-			var resultB = session.Load<EntityB>(c.EntityBId);
-
-			var resultC = session.Load<EntityC>(c.Id);
-
-			Assert.NotNull(resultA, "resultA");
-			Assert.NotNull(resultB, "resultB");
-			Assert.NotNull(resultC, "resultC");
-
-			Assert.AreEqual(session.Advanced.NumberOfRequests, 3);
+			public string Id { get { return "entityAs/" + External; } }
+			public Guid External { get; set; }
 		}
 
-		using (var session = store.OpenSession())
+		public class EntityB
 		{
-			var resultC =
-				session
-					.Include<EntityC>(x => x.EntityAId)
-					.Include(x => x.EntityBId)
-					.Load(c.Id);
-
-			var resultA = session.Load<EntityA>(a.Id);
-			var resultB = session.Load<EntityB>(b.Id);
-
-			Assert.AreEqual(1, session.Advanced.NumberOfRequests);
-			Assert.NotNull(resultC, "resultC");
-			Assert.NotNull(resultA, "resultA");
-			Assert.NotNull(resultB, "resultB");
+			public string Id { get { return "entityBs/" + External; } }
+			public Guid External { get; set; }
 		}
-	}
-}
 
-public class EntityA
-{
-	public string Id { get { return "entityAs/" + External; } }
-	public Guid External { get; set; }
-}
+		public class EntityC
+		{
+			public string Id { get { return "entityCs/" + External; } }
+			public Guid External { get; set; }
 
-public class EntityB
-{
-	public string Id { get { return "entityBs/" + External; } }
-	public Guid External { get; set; }
-}
+			public string EntityAId { get; set; }
 
-public class EntityC
-{
-	public string Id { get { return "entityCs/" + External; } }
-	public Guid External { get; set; }
-
-	public string EntityAId { get; set; }
-
-	public string EntityBId { get; set; }
-}
+			public string EntityBId { get; set; }
+		}
 	}
 }
